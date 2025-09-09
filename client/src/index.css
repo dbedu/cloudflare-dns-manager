@@ -18,7 +18,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
-}
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
