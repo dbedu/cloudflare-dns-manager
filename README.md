@@ -34,7 +34,7 @@
 ### 前提条件
 
 #### 本地开发
-- Node.js (v14 或更高版本)
+- Node.js (v20 或更高版本)
 - npm (v6 或更高版本)
 - Cloudflare API Token
 
@@ -105,12 +105,19 @@ cp .env.example .env
 
 ```
 CLOUDFLARE_API_TOKEN=your_api_token_here
+# 可选：自定义API地址
+VITE_API_URL=http://server:3001
 ```
 
 3. 使用 Docker Compose 构建并启动服务
 
 ```bash
+# 使用默认配置构建
 docker-compose up -d --build
+
+# 或者指定自定义API地址
+docker-compose build --build-arg VITE_API_URL=http://your-api-url
+docker-compose up -d
 ```
 
 4. 在浏览器中访问应用
@@ -186,6 +193,20 @@ docker-compose up -d
 - 容器化：Docker、Docker Compose
 - CI/CD：GitHub Actions
 - 容器注册表：GitHub Container Registry (GHCR)
+
+## 配置说明
+
+### API 配置
+
+前端应用通过环境变量 `VITE_API_URL` 配置API地址：
+
+- 在开发环境中，默认使用相对路径 `/api`，通过Nginx代理转发到后端服务
+- 在Docker环境中，通过Dockerfile中的环境变量设置：`ENV VITE_API_URL=${VITE_API_URL}`
+- 如需自定义API地址，可在构建时指定：`docker-compose build --build-arg VITE_API_URL=http://your-api-url`
+
+### 部署到HTTPS域名
+
+当通过HTTPS域名访问应用时，前端会自动使用配置的API地址或默认的相对路径，确保API请求正常工作。
 
 ## 注意事项
 
