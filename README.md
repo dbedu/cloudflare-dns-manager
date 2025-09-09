@@ -1,84 +1,194 @@
-# 项目部署指南
+# Cloudflare DNS 管理面板
 
-本文档将指导你如何通过 Docker 和 Docker Compose 部署 Cloudflare DNS 管理面板。
+一个简单易用的 Cloudflare DNS 记录管理工具，允许用户查看、添加、修改和删除其 Cloudflare 域名的 DNS 记录。
 
-## 先决条件
+## 功能特点
 
-1.  **Docker**: 确保你的服务器上已经安装了 Docker。
-2.  **Docker Compose**: (推荐) 确保你的服务器上已经安装了 Docker Compose。
-3.  **Cloudflare API 凭证**:
-    * `CLOUDFLARE_API_TOKEN`: 你的 Cloudflare API 令牌。
-    * `CLOUDFLARE_ZONE_ID`: 你要管理的域名的区域 ID。
-4.  **GitHub Container Registry (ghcr.io) 登录(Optinal)**:
-    * 你需要登录到 ghcr.io 才能拉取私有镜像。如果是公开镜像，则无需登录。
-    * 使用你的 GitHub 用户名和 Personal Access Token (PAT) 登录：
-        ```bash
-        echo $GH_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
-        ```
+- 查看所有域名的 DNS 记录
+- 添加新的 DNS 记录
+- 修改现有 DNS 记录
+- 删除 DNS 记录
+- 按类型筛选 DNS 记录
 
-## 部署步骤
+## 项目结构
 
-### 方法一：使用 Docker Compose (推荐)
+```
+├── client/                # 前端 React 应用
+│   ├── src/               # 源代码
+│   ├── public/            # 静态资源
+│   ├── Dockerfile         # 前端 Docker 构建文件
+│   ├── nginx.conf         # Nginx 配置文件
+│   └── ...               # 其他配置文件
+├── server/               # 后端 Express 服务器
+│   ├── server.js         # 服务器入口文件
+│   └── Dockerfile        # 后端 Docker 构建文件
+├── .github/              # GitHub 配置
+│   └── workflows/        # GitHub Actions 工作流
+│       └── docker-publish.yml  # Docker 构建与发布工作流
+├── docker-compose.yml    # Docker Compose 配置文件
+└── .env.example          # 环境变量示例文件
+```
 
-这是最简单的部署方式。
+## 安装与启动
 
-1.  **创建 `docker-compose.yml` 文件**:
-    将项目中的 `docker-compose.yml` 文件复制到你的服务器上。
+### 前提条件
 
-2.  **创建 `.env` 文件**:
-    在 `docker-compose.yml` 所在的目录中，创建一个名为 `.env` 的文件，并填入你的Cloudflare凭证：
-    ```
-    CLOUDFLARE_API_TOKEN=your_cloudflare_api_token_here
-    CLOUDFLARE_ZONE_ID=your_cloudflare_zone_id_here
-    ```
+#### 本地开发
+- Node.js (v14 或更高版本)
+- npm (v6 或更高版本)
+- Cloudflare API Token
 
-3.  **启动服务**:
-    在该目录下运行以下命令来启动容器：
-    ```bash
-    docker-compose up -d
-    ```
+#### Docker 部署
+- Docker (v20.10 或更高版本)
+- Docker Compose (v2.0 或更高版本)
+- Cloudflare API Token
 
-4.  **访问应用**:
-    现在你可以通过 `http://<your_server_ip>:3001` 访问你的应用了。
+### 本地开发安装步骤
 
-### 方法二：使用 Docker 命令
+1. 克隆仓库
 
-如果你不想使用 Docker Compose，也可以直接使用 `docker run` 命令。
+```bash
+git clone <仓库URL>
+cd cloudflare-dns-dashboard
+```
 
-1.  **拉取镜像**:
-    从 GitHub Container Registry 拉取最新的镜像。将 `<YOUR_GITHUB_USERNAME>` 替换为你的 GitHub 用户名。
-    ```bash
-    docker pull ghcr.io/<YOUR_GITHUB_USERNAME>/cloudflare-dns-dashboard:latest
-    ```
+2. 设置环境变量
 
-2.  **运行容器**:
-    执行以下命令来启动容器。请务必将命令中的占位符替换为你的实际信息。
+```bash
+cp .env.example .env
+```
 
-    ```bash
-    docker run -d \
-      --name cloudflare-dns-dashboard \
-      -p 3001:3001 \
-      -e CLOUDFLARE_API_TOKEN="your_cloudflare_api_token_here" \
-      -e CLOUDFLARE_ZONE_ID="your_cloudflare_zone_id_here" \
-      --restart unless-stopped \
-      ghcr.io/<YOUR_GITHUB_USERNAME>/cloudflare-dns-dashboard:latest
-    ```
+编辑 `.env` 文件，添加你的 Cloudflare API Token：
 
-3.  **访问应用**:
-    现在你可以通过 `http://<your_server_ip>:3001` 访问你的应用了。
+```
+CLOUDFLARE_API_TOKEN=your_api_token_here
+```
 
-## 管理服务
+3. 安装后端依赖并启动服务器
 
-* **查看日志**:
-    * **Docker Compose**: `docker-compose logs -f`
-    * **Docker**: `docker logs -f cloudflare-dns-dashboard`
+```bash
+cd server
+npm install
+npm start
+```
 
-* **停止服务**:
-    * **Docker Compose**: `docker-compose down`
-    * **Docker**: `docker stop cloudflare-dns-dashboard`
+4. 安装前端依赖并启动开发服务器
 
-* **更新镜像**:
-    1.  拉取最新镜像: `docker pull ghcr.io/<YOUR_GITHUB_USERNAME>/cloudflare-dns-dashboard:latest`
-    2.  重新部署:
-        * **Docker Compose**: `docker-compose up -d`
-        * **Docker**: 先停止并移除旧容器 (`docker stop/rm ...`)，然后用新的镜像重新运行 `docker run` 命令。
+```bash
+cd ../client
+npm install
+npm run dev
+```
+
+5. 在浏览器中访问应用
+
+```
+http://localhost:5173
+```
+
+### Docker 部署步骤
+
+1. 克隆仓库
+
+```bash
+git clone <仓库URL>
+cd cloudflare-dns-dashboard
+```
+
+2. 设置环境变量
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，添加你的 Cloudflare API Token：
+
+```
+CLOUDFLARE_API_TOKEN=your_api_token_here
+```
+
+3. 使用 Docker Compose 构建并启动服务
+
+```bash
+docker-compose up -d --build
+```
+
+4. 在浏览器中访问应用
+
+```
+http://localhost
+```
+
+### 使用预构建的 Docker 镜像
+
+本项目通过 GitHub Actions 自动构建并发布 Docker 镜像到 GitHub Container Registry。
+
+1. 拉取最新的镜像
+
+```bash
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+```
+
+2. 创建 docker-compose.yml 文件
+
+```yaml
+version: '3.8'
+
+services:
+  server:
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
+    container_name: cloudflare-dns-dashboard-server
+    restart: unless-stopped
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+
+  client:
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+    container_name: cloudflare-dns-dashboard-client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+3. 创建 .env 文件并添加你的 Cloudflare API Token
+
+4. 启动服务
+
+```bash
+docker-compose up -d
+```
+
+## 使用说明
+
+1. 在下拉菜单中选择你的域名
+2. 查看该域名的所有 DNS 记录
+3. 使用表单添加新的 DNS 记录
+4. 点击记录旁边的编辑按钮修改记录
+5. 点击记录旁边的删除按钮删除记录
+
+## 技术栈
+
+- 前端：React、Vite、Tailwind CSS、Axios
+- 后端：Node.js、Express
+- 容器化：Docker、Docker Compose
+- CI/CD：GitHub Actions
+- 容器注册表：GitHub Container Registry (GHCR)
+
+## 注意事项
+
+- 确保你的 Cloudflare API Token 具有足够的权限来管理 DNS 记录
+- 本应用仅在本地运行，不建议部署到公共环境，除非添加了适当的身份验证机制
+- 对于生产环境，建议添加更多的错误处理和日志记录功能

@@ -1,15 +1,39 @@
 version: '3.8'
 
 services:
-  app:
-    image: ghcr.io/arkosaur/cloudflare-dns-dashboard:latest
-    container_name: cloudflare-dns-dashboard
+  # 后端服务
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: cloudflare-dns-dashboard-server
     restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     ports:
       - "3001:3001"
-    environment:
-      # 在下面的.env文件中设置这些变量
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
-    env_file:
-      - .env
+    networks:
+      - app-network
+    volumes:
+      - ./.env:/app/.env
+
+  # 前端服务
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:3001
+    container_name: cloudflare-dns-dashboard-client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
