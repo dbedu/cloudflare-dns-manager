@@ -24,7 +24,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=http://localhost:3001
+        - VITE_API_URL=/api
     container_name: cloudflare-dns-dashboard-client
     restart: unless-stopped
     ports:
