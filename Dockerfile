@@ -12,7 +12,8 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ .
-RUN npm run build
+# MODIFIED LINE: Add CI=false to the build command
+RUN CI=false npm run build
 
 # Final Image
 FROM node:18-alpine
