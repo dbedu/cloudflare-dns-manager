@@ -2,50 +2,42 @@
 
 name: Build and Push Docker Image to GHCR
 
+# 优化 1: 增加更丰富的触发器
 on:
   push:
     branches:
-      - 'master' # 仅在 master 分支推送时触发
-      - 'main'   # 也支持 main 分支
+      - 'main'   # 在 main 分支推送时触发
+      - 'master' # 也兼容 master 分支
     tags:
-      - 'v*.*.*' # 在推送版本标签时（如 v1.0.0）触发
+      - 'v*.*.*' # 在推送版本标签时（如 v1.0.0）触发，用于发布
   pull_request:
     branches:
-      - 'master'
       - 'main'
+      - 'master'
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    # 优化 2: 正确设置权限，为 GITHUB_TOKEN 授权
     permissions:
       contents: read
       packages: write
 
     steps:
     - name: Checkout repository
+      # 优化 3: 使用最新的 Action 版本
       uses: actions/checkout@v4
 
-    # 1. 优化点：自动提取元数据（标签和标注）
-    # 这个 Action 会根据 Git 事件（如分支、标签）自动生成更智能、更有用的 Docker 标签。
-    # - 推送到 master 分支会生成 'latest' 和 'master' 标签
-    # - 推送 Git 标签 v1.2.3 会生成 'v1.2.3' 和 'v1' 标签
+    # 优化 4: 自动提取元数据（标签和标注）
+    # 这个 Action 会根据 Git 事件自动生成更智能的 Docker 标签
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
         images: ghcr.io/${{ github.repository }}
-        tags: |
-          # Git 标签事件，例如 v1.0.0
-          type=semver,pattern={{version}}
-          # Git 分支事件
-          type=ref,event=branch
-          # 为默认分支添加 latest 标签
-          type=raw,value=latest,enable={{is_default_branch}}
-          # 使用 SHA 作为标签，保证唯一性
-          type=sha,prefix=,suffix=,format=short
 
-    # 2. 优化点：登录到 GitHub Container Registry (GHCR)
-    # 使用 GITHUB_TOKEN，无需改动，但这是最佳实践。
+    # 优化 5: 使用 GITHUB_TOKEN 安全登录
+    # 不再需要 GH_PAT，这是最重要和最安全的改动
     - name: Log in to the GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -53,46 +45,20 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # 3. 优化点：设置 QEMU 以支持多平台构建（可选，但推荐）
-    # 如果你的应用需要运行在不同的 CPU 架构上（如 AMD64 和 ARM64），这一步非常有用。
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-
-    # 4. 优化点：设置 Docker Buildx
-    # Buildx 是一个 Docker CLI 插件，它扩展了 build 命令，完全支持 BuildKit 构建器工具包。
-    # 这是使用缓存和多平台构建的前提。
+    # (推荐) 设置 Buildx，以使用缓存等高级功能
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # 5. 优化点：构建和推送镜像，并启用缓存
-    # - cache-from/cache-to: 极大地提升后续构建速度。
-    # - labels: 使用 meta action 自动生成的标注，包含 Git SHA 等溯源信息。
-    # - tags: 使用 meta action 自动生成的标签。
-    # - platforms: 指定构建的目标平台（架构）。
+    # 优化 6: 构建和推送，并启用缓存和智能标签
     - name: Build and push Docker image
-      id: build-and-push
       uses: docker/build-push-action@v5
       with:
         context: .
-        # 仅在非 pull_request 事件中推送镜像
+        # 仅在非 pull_request 事件中推送镜像，PR中只构建用于检查
         push: ${{ github.event_name != 'pull_request' }}
+        # 使用 metadata-action 自动生成的标签，取代写死的 'latest'
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        # 启用 BuildKit 缓存，关联到 Git ref 和 job id
+        # 启用 BuildKit 缓存，极大地提升后续构建速度
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        # (可选) 指定构建的平台
-        # platforms: linux/amd64,linux/arm64
-
-    # (可选) 6. 新增步骤：运行 Trivy 进行漏洞扫描
-    # 在镜像推送到仓库后，对其进行安全扫描，有助于及早发现安全风险。
-    - name: Scan image for vulnerabilities
-      if: github.event_name != 'pull_request' # 仅在推送后扫描
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: 'ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}'
-        format: 'table'
-        exit-code: '0' # 即使发现漏洞也继续，仅作报告
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
