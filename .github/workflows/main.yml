@@ -28,5 +28,5 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/cloudflare-dns-dashboard:latest
+        tags: ghcr.io/${{ toLower(github.repository_owner) }}/cloudflare-dns-dashboard:latest
         # 如果你的仓库名不是 cloudflare-dns-dashboard，请替换为实际仓库名
