@@ -133,8 +133,8 @@ http://localhost
 1. 拉取最新的镜像
 
 ```bash
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
 ```
 
 2. 创建 docker-compose.yml 文件
@@ -144,7 +144,7 @@ version: '3.8'
 
 services:
   server:
-    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
     container_name: cloudflare-dns-dashboard-server
     restart: unless-stopped
     environment:
@@ -155,7 +155,7 @@ services:
       - app-network
 
   client:
-    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
     container_name: cloudflare-dns-dashboard-client
     restart: unless-stopped
     ports:
