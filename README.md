@@ -9,7 +9,7 @@
 3.  **Cloudflare API 凭证**:
     * `CLOUDFLARE_API_TOKEN`: 你的 Cloudflare API 令牌。
     * `CLOUDFLARE_ZONE_ID`: 你要管理的域名的区域 ID。
-4.  **GitHub Container Registry (ghcr.io) 登录**:
+4.  **GitHub Container Registry (ghcr.io) 登录(Optinal)**:
     * 你需要登录到 ghcr.io 才能拉取私有镜像。如果是公开镜像，则无需登录。
     * 使用你的 GitHub 用户名和 Personal Access Token (PAT) 登录：
         ```bash
@@ -23,7 +23,7 @@
 这是最简单的部署方式。
 
 1.  **创建 `docker-compose.yml` 文件**:
-    将项目中的 `docker-compose.yml` 文件复制到你的服务器上。记得修改文件中的 `image` 字段，将 `<YOUR_GITHUB_USERNAME>` 替换为你的GitHub用户名。
+    将项目中的 `docker-compose.yml` 文件复制到你的服务器上。
 
 2.  **创建 `.env` 文件**:
     在 `docker-compose.yml` 所在的目录中，创建一个名为 `.env` 的文件，并填入你的Cloudflare凭证：

@@ -2,8 +2,7 @@ version: '3.8'
 
 services:
   app:
-    # 注意: 将 <YOUR_GITHUB_USERNAME> 替换为你的GitHub用户名
-    image: ghcr.io/<YOUR_GITHUB_USERNAME>/cloudflare-dns-dashboard:latest
+    image: ghcr.io/arkosaur/cloudflare-dns-dashboard:latest
     container_name: cloudflare-dns-dashboard
     restart: unless-stopped
     ports:
