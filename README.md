@@ -106,7 +106,7 @@ cp .env.example .env
 ```
 CLOUDFLARE_API_TOKEN=your_api_token_here
 # 可选：自定义API地址
-VITE_API_URL=http://server:3001
+VITE_API_URL=/api  # 推荐使用相对路径，避免HTTPS访问时的混合内容问题
 ```
 
 3. 使用 Docker Compose 构建并启动服务
@@ -115,8 +115,8 @@ VITE_API_URL=http://server:3001
 # 使用默认配置构建
 docker-compose up -d --build
 
-# 或者指定自定义API地址
-docker-compose build --build-arg VITE_API_URL=http://your-api-url
+# 或者指定自定义API地址（推荐使用相对路径）
+docker-compose build --build-arg VITE_API_URL=/api
 docker-compose up -d
 ```
 
@@ -133,8 +133,8 @@ http://localhost
 1. 拉取最新的镜像
 
 ```bash
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
 ```
 
 2. 创建 docker-compose.yml 文件
@@ -144,7 +144,7 @@ version: '3.8'
 
 services:
   server:
-    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
     container_name: cloudflare-dns-dashboard-server
     restart: unless-stopped
     environment:
@@ -155,7 +155,7 @@ services:
       - app-network
 
   client:
-    image: ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+    image: ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
     container_name: cloudflare-dns-dashboard-client
     restart: unless-stopped
     ports:
@@ -206,7 +206,21 @@ docker-compose up -d
 
 ### 部署到HTTPS域名
 
-当通过HTTPS域名访问应用时，前端会自动使用配置的API地址或默认的相对路径，确保API请求正常工作。
+当通过HTTPS域名访问应用时，需要注意以下几点：
+
+1. **避免混合内容问题**：当网站通过HTTPS访问时，浏览器会阻止HTTP请求，导致API调用失败。确保在docker-compose.yml中将`VITE_API_URL`设置为相对路径`/api`而非`http://`开头的绝对路径。
+
+2. **配置示例**：
+   ```yaml
+   client:
+     build:
+       context: ./client
+       dockerfile: Dockerfile
+       args:
+         - VITE_API_URL=/api  # 使用相对路径，避免混合内容问题
+   ```
+
+3. **Nginx配置**：前端的nginx.conf已配置将`/api`请求代理到后端服务，确保此配置正确。
 
 ## 注意事项
 
