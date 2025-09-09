@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const path = require('path'); // 引入 path 模块
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ const cloudflareApi = axios.create({
   }
 });
 
+// --- API 路由 ---
 app.get('/api/dns-records', async (req, res) => {
   try {
     const response = await cloudflareApi.get(`zones/${CLOUDFLARE_ZONE_ID}/dns_records`);
@@ -55,6 +57,19 @@ app.delete('/api/dns-records/:id', async (req, res) => {
         res.status(500).json({ message: 'Error deleting DNS record', error: error.message });
     }
 });
+
+// --- 新增代码开始：提供前端静态文件 ---
+
+// 1. 指定前端构建产物的静态资源目录
+app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+// 2. 对于所有未匹配到 API 的 GET 请求，都返回前端的 index.html
+//    这对于单页面应用(SPA)的路由至关重要
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+});
+
+// --- 新增代码结束 ---
 
 
 const port = process.env.PORT || 3001;
