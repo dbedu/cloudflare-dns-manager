@@ -126,8 +126,8 @@ http://localhost
 1. 拉取最新的镜像
 
 ```bash
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-server:latest
-docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard-client:latest
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
+docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
 ```
 
 2. 创建 docker-compose.yml 文件
