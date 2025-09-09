@@ -1,31 +1,38 @@
+# .github/workflows/main.yml
+
 name: Build and Push Docker Image to GHCR
 
 on:
   push:
     branches:
-      - master  # 或者 master，取决于你的主分支名称
+      - master  # 或者 main，取决于你的主分支名称
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    # 关键改动：为 GITHUB_TOKEN 授予写软件包的权限
     permissions:
       contents: read
       packages: write
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # 建议更新到 v4
 
+    # 关键改动：使用 GITHUB_TOKEN 进行登录，不再需要 GH_PAT
     - name: Log in to the GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3 # 建议更新到 v3
       with:
         registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GH_PAT }} # 需要在仓库的Secrets中设置
+        # ${{ github.actor }} 是触发工作流的用户或应用
+        username: ${{ github.actor }}
+        # 使用自动生成的 GITHUB_TOKEN 进行认证
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5 # 建议更新到 v5
       with:
         context: .
         push: true
+        # 标签格式保持不变，它将镜像正确链接到仓库
         tags: ghcr.io/${{ github.repository }}:latest
