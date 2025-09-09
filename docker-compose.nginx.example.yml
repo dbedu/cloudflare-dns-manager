@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Nginx代理服务器
+  nginx:
+    image: nginx:alpine
+    container_name: cloudflare-dns-dashboard-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"  # 如果配置HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # 使用自定义的nginx配置
+      - frontend_build:/usr/share/nginx/html  # 挂载前端构建产物
+      # - ./ssl:/etc/nginx/ssl  # 如果需要SSL证书
+    networks:
+      - app-network
+    depends_on:
+      - client
+
+networks:
+  app-network:
+    external: true  # 使用已存在的网络，与API服务和前端构建服务在同一网络
+
+volumes:
+  frontend_build:
+    external: true  # 使用已存在的卷，存储前端构建产物

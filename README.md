@@ -17,7 +17,6 @@
 │   ├── src/               # 源代码
 │   ├── public/            # 静态资源
 │   ├── Dockerfile         # 前端 Docker 构建文件
-│   ├── nginx.conf         # Nginx 配置文件
 │   └── ...               # 其他配置文件
 ├── server/               # 后端 Express 服务器
 │   ├── server.js         # 服务器入口文件
@@ -25,8 +24,10 @@
 ├── .github/              # GitHub 配置
 │   └── workflows/        # GitHub Actions 工作流
 │       └── docker-publish.yml  # Docker 构建与发布工作流
-├── docker-compose.yml    # Docker Compose 配置文件
-└── .env.example          # 环境变量示例文件
+├── docker-compose.yml            # 主要 Docker Compose 配置文件
+├── docker-compose.nginx.example.yml  # Nginx 部署示例配置
+├── nginx.conf.example            # Nginx 配置示例文件
+└── .env.example                  # 环境变量示例文件
 ```
 
 ## 安装与启动
@@ -88,6 +89,8 @@ http://localhost:5173
 
 ### Docker 部署步骤
 
+本项目采用分离部署方式，将前端构建、后端API和Nginx代理分开部署，更加灵活和安全。
+
 1. 克隆仓库
 
 ```bash
@@ -105,25 +108,36 @@ cp .env.example .env
 
 ```
 CLOUDFLARE_API_TOKEN=your_api_token_here
-# 可选：自定义API地址
-VITE_API_URL=/api  # 推荐使用相对路径，避免HTTPS访问时的混合内容问题
 ```
 
-3. 使用 Docker Compose 构建并启动服务
+3. 构建并启动API服务和前端构建服务
 
 ```bash
-# 使用默认配置构建
+# 构建并启动API服务和前端构建服务
 docker-compose up -d --build
-
-# 或者指定自定义API地址（推荐使用相对路径）
-docker-compose build --build-arg VITE_API_URL=/api
-docker-compose up -d
 ```
 
-4. 在浏览器中访问应用
+4. 配置Nginx代理
+
+```bash
+# 复制Nginx配置示例文件
+cp nginx.conf.example nginx.conf
+cp docker-compose.nginx.example.yml docker-compose.nginx.yml
+```
+
+根据你的需求编辑 `nginx.conf` 文件，特别是服务器名称和SSL配置。
+
+5. 启动Nginx代理服务
+
+```bash
+docker-compose -f docker-compose.nginx.yml up -d
+```
+
+6. 在浏览器中访问应用
 
 ```
 http://localhost
+# 或者你配置的域名
 ```
 
 ### 使用预构建的 Docker 镜像
@@ -137,7 +151,7 @@ docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-server
 docker pull ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
 ```
 
-2. 创建 docker-compose.yml 文件
+2. 创建主要 docker-compose.yml 文件
 
 ```yaml
 version: '3.8'
@@ -149,33 +163,70 @@ services:
     restart: unless-stopped
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-    ports:
-      - "3001:3001"
+    # 仅在内部网络暴露端口
+    expose:
+      - "3001"
     networks:
       - app-network
+    volumes:
+      - ./.env:/app/.env
 
   client:
     image: ghcr.io/<github-username>/cloudflare-dns-dashboard:master-client
     container_name: cloudflare-dns-dashboard-client
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - server
+    volumes:
+      - frontend_build:/output
     networks:
       - app-network
+
+volumes:
+  frontend_build:
 
 networks:
   app-network:
     driver: bridge
 ```
 
-3. 创建 .env 文件并添加你的 Cloudflare API Token
+3. 创建 Nginx 配置文件 (nginx.conf) 和 docker-compose.nginx.yml 文件
 
-4. 启动服务
+```yaml
+# docker-compose.nginx.yml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: cloudflare-dns-dashboard-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"  # 如果配置HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - frontend_build:/usr/share/nginx/html
+      # - ./ssl:/etc/nginx/ssl  # 如果需要SSL证书
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true  # 使用已存在的网络
+
+volumes:
+  frontend_build:
+    external: true  # 使用已存在的卷
+```
+
+4. 创建 .env 文件并添加你的 Cloudflare API Token
+
+5. 启动服务
 
 ```bash
+# 先启动API服务和前端构建服务
 docker-compose up -d
+
+# 然后启动Nginx代理服务
+docker-compose -f docker-compose.nginx.yml up -d
 ```
 
 ## 使用说明
@@ -196,31 +247,69 @@ docker-compose up -d
 
 ## 配置说明
 
+### 分离部署架构
+
+本项目采用分离部署架构，将各组件解耦：
+
+1. **后端API服务**：提供API接口，不对外直接暴露
+2. **前端构建服务**：仅负责构建静态文件，输出到共享卷
+3. **Nginx代理服务**：负责提供静态文件服务和API代理，是唯一对外暴露的服务
+
+这种架构的优势：
+- 更高的安全性：后端服务不直接对外暴露
+- 更灵活的部署：可以根据需求自定义Nginx配置
+- 更好的可维护性：各组件职责单一，易于维护
+
 ### API 配置
 
 前端应用通过环境变量 `VITE_API_URL` 配置API地址：
 
-- 在开发环境中，默认使用相对路径 `/api`，通过Nginx代理转发到后端服务
-- 在Docker环境中，通过Dockerfile中的环境变量设置：`ENV VITE_API_URL=${VITE_API_URL}`
-- 如需自定义API地址，可在构建时指定：`docker-compose build --build-arg VITE_API_URL=http://your-api-url`
+- 在开发环境中，默认使用相对路径 `/api`
+- 在Docker环境中，默认设置为 `/api`，通过Nginx代理转发到后端服务
+- 如需自定义，可在构建前端镜像时指定：`docker-compose build --build-arg VITE_API_URL=/custom-api-path client`
+
+### Nginx配置
+
+项目提供了Nginx配置示例文件 `nginx.conf.example`，主要包含：
+
+1. **静态文件服务**：提供前端构建产物的访问
+2. **API代理**：将 `/api` 请求代理到后端服务
+3. **SPA路由支持**：确保前端路由正常工作
 
 ### 部署到HTTPS域名
 
 当通过HTTPS域名访问应用时，需要注意以下几点：
 
-1. **避免混合内容问题**：当网站通过HTTPS访问时，浏览器会阻止HTTP请求，导致API调用失败。确保在docker-compose.yml中将`VITE_API_URL`设置为相对路径`/api`而非`http://`开头的绝对路径。
+1. **配置SSL证书**：在Nginx配置中添加SSL证书配置
 
-2. **配置示例**：
-   ```yaml
-   client:
-     build:
-       context: ./client
-       dockerfile: Dockerfile
-       args:
-         - VITE_API_URL=/api  # 使用相对路径，避免混合内容问题
+   ```nginx
+   server {
+       listen 443 ssl;
+       server_name your-domain.com;
+       
+       ssl_certificate /etc/nginx/ssl/cert.pem;
+       ssl_certificate_key /etc/nginx/ssl/key.pem;
+       
+       # 其他配置...
+   }
    ```
 
-3. **Nginx配置**：前端的nginx.conf已配置将`/api`请求代理到后端服务，确保此配置正确。
+2. **HTTP重定向**：将HTTP请求重定向到HTTPS
+
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+       return 301 https://$host$request_uri;
+   }
+   ```
+
+3. **挂载SSL证书**：在docker-compose.nginx.yml中挂载SSL证书目录
+
+   ```yaml
+   volumes:
+     - ./ssl:/etc/nginx/ssl
+   ```
 
 ## 注意事项
 

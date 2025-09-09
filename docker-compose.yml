@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 后端服务
+  # 后端API服务
   server:
     build:
       context: ./server
@@ -11,14 +11,15 @@ services:
     environment:
       - NODE_ENV=production
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-    ports:
-      - "3001:3001"
+    # 仅在内部网络暴露端口，不对外暴露
+    expose:
+      - "3001"
     networks:
       - app-network
     volumes:
       - ./.env:/app/.env
 
-  # 前端服务
+  # 前端构建服务 - 仅负责构建静态文件
   client:
     build:
       context: ./client
@@ -26,13 +27,14 @@ services:
       args:
         - VITE_API_URL=/api
     container_name: cloudflare-dns-dashboard-client
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - server
+    volumes:
+      - frontend_build:/output
     networks:
       - app-network
+
+# 定义卷，用于存储前端构建产物
+volumes:
+  frontend_build:
 
 networks:
   app-network:
