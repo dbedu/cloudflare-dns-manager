@@ -28,5 +28,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/arkosaur/cloudflare-dns-dashboard:latest
-        # 将 cloudflare-dns-dashboard 替换为你的仓库名称（如果不同）
+        tags: ghcr.io/${{ github.repository }}:latest
