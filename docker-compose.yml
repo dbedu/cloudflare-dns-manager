@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    # 注意: 将 <YOUR_GITHUB_USERNAME> 替换为你的GitHub用户名
+    image: ghcr.io/<YOUR_GITHUB_USERNAME>/cloudflare-dns-dashboard:latest
+    container_name: cloudflare-dns-dashboard
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      # 在下面的.env文件中设置这些变量
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
+    env_file:
+      - .env
