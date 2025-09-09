@@ -21,7 +21,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GH_PAT }} # 需要在仓库的Secrets中设置
+        password: ${{ secrets.GH_PAT }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
@@ -29,4 +29,4 @@ jobs:
         context: .
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/cloudflare-dns-dashboard:latest
-        # 将 cloudflare-dns-dashboard 替换为你的仓库名称（如果不同）
+        # 如果你的仓库名不是 cloudflare-dns-dashboard，请替换为实际仓库名
