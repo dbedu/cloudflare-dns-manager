@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// API 基础 URL
-const API_BASE_URL = 'http://localhost:3001/api';
+// API 基础 URL - 在 Docker 环境中通过 nginx 代理 /api 到后端
+const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3001/api' : '/api';
 
 function App() {
   // 状态管理

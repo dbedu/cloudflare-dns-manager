@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 3001;
 
 // 中间件
 app.use(cors({
-  origin: 'http://localhost:5173' // 允许前端访问
+  origin: ['http://localhost:5173', 'http://localhost'], // 允许前端访问
+  credentials: true
 }));
 app.use(express.json());
 
@@ -108,6 +109,6 @@ app.use((err, req, res, next) => {
 });
 
 // 启动服务器
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Cloudflare DNS 管理服务器运行在端口 ${PORT}`);
 });
