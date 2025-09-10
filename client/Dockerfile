@@ -27,3 +27,6 @@ RUN cp -r dist/* /output/
 
 # 设置输出卷
 VOLUME /output
+
+# 保持容器运行
+CMD ["tail", "-f", "/dev/null"]

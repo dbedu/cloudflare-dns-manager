@@ -311,8 +311,19 @@ docker-compose -f docker-compose.nginx.yml up -d
      - ./ssl:/etc/nginx/ssl
    ```
 
+## 故障排除
+
+如果在 Docker 部署过程中遇到问题，请参考 [Docker 故障排除指南](./DOCKER_TROUBLESHOOTING.md)。
+
+常见问题：
+- 客户端容器启动后立即退出
+- 静态文件构建失败
+- 网络连接问题
+- Docker 命令不可用
+
 ## 注意事项
 
 - 确保你的 Cloudflare API Token 具有足够的权限来管理 DNS 记录
 - 本应用仅在本地运行，不建议部署到公共环境，除非添加了适当的身份验证机制
 - 对于生产环境，建议添加更多的错误处理和日志记录功能
+- 如果 Docker 不可用，可以使用本地开发模式运行应用
