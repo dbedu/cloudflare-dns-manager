@@ -31,7 +31,7 @@ cp .env.example .env
 ### 编辑 .env 文件，填入您的 CLOUDFLARE_API_TOKEN
 
 ### 使用 docker-compose 启动服务
-docker-compose up --build
+docker compose up -d
 应用将在以下地址可用:
 
 前端界面: http://localhost
