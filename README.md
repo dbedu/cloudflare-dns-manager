@@ -28,7 +28,8 @@ npm run dev
 ---
 
 ## 2. Docker 部署
-1.Download the `docker-compose.yml`, change the `your_github_username` to `dbedu` to use my images. 
+1.Download the `docker-compose.yml`, change `your_github_username` to `dbedu` to use my images. 
+
 2.Fork the repository and start the github actions to create your own docker images.(Optional)
 
 ### 复制环境变量文件并填写您的 Cloudflare API Token
