@@ -24,8 +24,13 @@ npm install
 
 #### 启动前端开发服务器
 npm run dev
+
+---
+
 ## 2. Docker 部署
-bash
+1.Download the `docker-compose.yml`, change the `your_github_username` to `dbedu` to use my images. 
+2.Fork the repository and start the github actions to create your own docker images.(Optional)
+
 ### 复制环境变量文件并填写您的 Cloudflare API Token
 cp .env.example .env
 ### 编辑 .env 文件，填入您的 CLOUDFLARE_API_TOKEN
