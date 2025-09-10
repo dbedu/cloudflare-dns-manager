@@ -1,24 +1,29 @@
 {
-  "name": "server",
+  "name": "cloudflare-dns-manager-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Cloudflare DNS Manager Backend Server",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "axios": "^1.11.0",
+    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0"
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "cloudflare",
+    "dns",
+    "manager",
+    "express",
+    "api"
+  ],
+  "author": "Developer",
+  "license": "MIT"
 }
