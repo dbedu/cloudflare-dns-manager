@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   server:
-    build:
-      context: ./server
+    image: ghcr.io/your_github_username/cloudflare-dns-dashboard-server:latest
+    container_name: cfserver
     ports:
       - "3001:3001"
     environment:
@@ -13,10 +13,9 @@ services:
       - .env
 
   client:
-    build:
-      context: ./client
+    image: ghcr.io/your_github_username/cloudflare-dns-dashboard-client:latest
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - server
     environment:
