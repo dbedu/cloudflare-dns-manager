@@ -1,8 +1,9 @@
+// client/src/App.test.js
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders login page', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const loginHeader = screen.getByText(/DNS Manager Login/i);
+  expect(loginHeader).toBeInTheDocument();
 });
