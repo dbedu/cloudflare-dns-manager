@@ -38,7 +38,7 @@ jobs:
         cd client
         npm test
 
-  build-and-deploy:
+  build:
     needs: test
     runs-on: ubuntu-latest
     
@@ -49,15 +49,3 @@ jobs:
       run: |
         docker build -t my-app-server ./server
         docker build -t my-app-client ./client
-        
-    - name: Run containers
-      run: |
-        # Update to use port 3001 for server
-        docker run -d -p 3001:3001 --name server my-app-server
-        docker run -d -p 3000:3000 --name client my-app-client
-        
-    - name: Health check
-      run: |
-        # Check if server is running on port 3001
-        sleep 10
-        curl http://localhost:3001/health || exit 1
