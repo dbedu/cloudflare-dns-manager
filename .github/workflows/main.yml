@@ -21,13 +21,13 @@ jobs:
     - name: Install server dependencies
       run: |
         cd server
-        npm ci
+        npm install
         
     - name: Install client dependencies
       run: |
         cd client
-        npm ci
-        
+        npm install
+    
     - name: Run server tests
       run: |
         cd server
