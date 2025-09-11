@@ -13,7 +13,7 @@ cp .env.example .env
 #### 编辑 .env 文件，填入您的 CLOUDFLARE_API_TOKEN
 
 #### 启动后端服务
-npm run dev
+npm start
 ### 前端设置:
 bash
 #### 进入 client 目录
@@ -23,7 +23,7 @@ cd client
 npm install
 
 #### 启动前端开发服务器
-npm run dev
+npm start
 
 ---
 
@@ -40,6 +40,6 @@ cp .env.example .env
 docker compose up -d
 应用将在以下地址可用:
 
-前端界面: http://localhost
+前端界面: http://localhost:3000
 后端 API: http://localhost:3001
 这个完整的解决方案提供了一个功能齐全的 Cloudflare DNS 管理面板，具有直观的用户界面和安全的后端代理，满足所有指定要求。

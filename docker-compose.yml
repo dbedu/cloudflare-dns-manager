@@ -2,21 +2,28 @@ version: '3.8'
 
 services:
   server:
-    image: ghcr.io/your_github_username/cloudflare-dns-dashboard-server:latest
-    container_name: cfserver
+    image: ghcr.io/your-username/your-server-image:latest
     ports:
+      # Server uses port 3001
       - "3001:3001"
     environment:
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - PORT=3001
-    env_file:
-      - .env
+      - NODE_ENV=production
+    volumes:
+      # Mount volume for SQLite database persistence
+      - sqlite_data:/app/database
+    depends_on:
+      - client
 
   client:
-    image: ghcr.io/your_github_username/cloudflare-dns-dashboard-client:latest
+    image: ghcr.io/your-username/your-client-image:latest
     ports:
-      - "8081:80"
+      # Client continues to use port 3000
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://server:3001/api
     depends_on:
       - server
-    environment:
-      - REACT_APP_API_URL=http://localhost:3001
+
+volumes:
+  sqlite_data:
