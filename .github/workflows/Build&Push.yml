@@ -43,7 +43,7 @@ jobs:
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     
     steps:
     - uses: actions/checkout@v2
@@ -93,8 +93,3 @@ jobs:
         push: true
         tags: ${{ steps.meta-client.outputs.tags }}
         labels: ${{ steps.meta-client.outputs.labels }}
-    
-    - name: Deploy with Docker Compose (Production only)
-      if: github.ref == 'refs/heads/production'
-      run: |
-        docker-compose up -d
