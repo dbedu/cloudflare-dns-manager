@@ -1,21 +1,13 @@
-FROM node:18-alpine as build
+FROM node:16-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production
 
 COPY . .
 
-RUN npm run build
+# Client typically runs on port 3000
+EXPOSE 3000
 
-FROM nginx:alpine
-
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# 复制 nginx 配置
-COPY nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
