@@ -2,49 +2,31 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
 import Login from './pages/login';
-import Dashboard from './pages/Dashboard'; // Your existing DNS management page
+import Dashboard from './pages/Dashboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return children;
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
 };
 
-// Main App Component
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/" 
-            element={
+    <Router future={{ v7_relativeSplatPath: true }}>
+      <AuthProvider>
+        <div className="App">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dns/*" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            } />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 
