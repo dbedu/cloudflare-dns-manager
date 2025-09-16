@@ -14,6 +14,18 @@ console.log('='.repeat(50));
 console.log('    Cloudflare DNS Manager - 初始化密钥');
 console.log('='.repeat(50));
 
+// 在 init-key.js 中添加以下代码来显示当前密钥（仅用于调试）
+if (fs.existsSync(configPath)) {
+  try {
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    console.log('当前配置状态:');
+    console.log('  登录密钥状态:', config.loginKey ? '已设置' : '未设置');
+    // 注意：这里不能显示明文密钥，因为只存储了哈希值
+  } catch (error) {
+    console.log('配置文件格式错误:', error.message);
+  }
+}
+
 // 检查配置文件是否已存在
 if (fs.existsSync(configPath)) {
   console.log('✓ 配置文件已存在，跳过密钥生成');
