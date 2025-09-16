@@ -1,24 +1,26 @@
 version: '3.8'
 
 services:
-  backend:
-    build: ./server
-    container_name: dns-manager-backend
-    command: sh -c "node tools/init-key.js && node src/server.js"
-    environment:
-      - NODE_ENV=production
+  server:
+    image: ghcr.io/dbedu/cloudflare-dns-manager-server:latest
+    container_name: cfserver
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./server/.env
     volumes:
       - sqlite_data:/app/database
-      # Also mount the config to make it persistent
       - ./server/src/config:/app/src/config
 
-  frontend:
-    build: ./client
-    container_name: dns-manager-frontend
+  client:
+    image: ghcr.io/dbedu/cloudflare-dns-manager-client:latest
+    container_name: cfclient
     ports:
       - "8081:80"
     depends_on:
-      - backend
+      - server
+    environment:
+      - REACT_APP_API_URL=http://server:3001
 
 volumes:
   sqlite_data:
