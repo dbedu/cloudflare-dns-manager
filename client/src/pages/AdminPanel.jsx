@@ -168,17 +168,19 @@ const AdminPanel = () => {
         <div className="bg-white p-6 shadow-lg rounded-xl">
           <h2 className="text-lg font-semibold text-slate-800 mb-4">{t('adminPanel.loginKey.title')}</h2>
           <form onSubmit={updateLoginKey} className="space-y-4">
+            {/* Hidden username field for accessibility and to prevent autocomplete on wrong fields */}
+            <input type="text" name="username" defaultValue="dns-manager-user" className="hidden" autoComplete="username" />
             <div>
               <label htmlFor="currentKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.currentKey')}</label>
               <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} autoComplete="current-password" />
             </div>
             <div>
               <label htmlFor="newKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.newKey')}</label>
-              <input type="password" id="newKey" value={newKey} onChange={(e) => setNewKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.newKeyPlaceholder')} />
+              <input type="password" id="newKey" value={newKey} onChange={(e) => setNewKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.newKeyPlaceholder')} autoComplete="new-password" />
             </div>
             <div>
               <label htmlFor="confirmKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.confirmNewKey')}</label>
-              <input type="password" id="confirmKey" value={confirmKey} onChange={(e) => setConfirmKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.confirmNewKeyPlaceholder')} />
+              <input type="password" id="confirmKey" value={confirmKey} onChange={(e) => setConfirmKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.confirmNewKeyPlaceholder')} autoComplete="new-password" />
             </div>
             <button type="submit" disabled={saving || !currentKey || !newKey || !confirmKey} className="w-full inline-flex justify-center items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
               <ShieldExclamationIcon className="h-5 w-5" /><span>{saving ? t('adminPanel.buttons.updating') : t('adminPanel.buttons.updateLoginKey')}</span>

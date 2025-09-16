@@ -11,7 +11,7 @@ i18n
     fallbackLng: 'en',
     debug: false, // Set to false in production
     supportedLngs: ['en', 'ja', 'zh-CN', 'zh-TW'],
-    nonExplicitSupportedLngs: true,
+    nonExplicitSupportedLngs: false,
 
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
