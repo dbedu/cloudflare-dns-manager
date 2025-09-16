@@ -44,6 +44,14 @@
       "recordDeleted": "记录删除成功！",
       "proxiedEnabled": "代理已成功启用！",
       "proxiedDisabled": "代理已成功禁用！"
+    },
+    "ttl": {
+      "automatic": "自动",
+      "minute": "分钟",
+      "minutes": "分钟",
+      "hour": "小时",
+      "hours": "小时",
+      "day": "天"
     }
   },
   "adminPanel": {

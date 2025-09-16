@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -218,12 +219,12 @@ const Dashboard = () => {
         </div>
       )}
 
-      <RecordEditModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        record={editingRecord} 
-        onSave={handleSaveRecord} 
-        zoneId={selectedZone} 
+      <RecordEditModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        record={editingRecord}
+        onSave={handleSaveRecord}
+        zoneId={selectedZone}
       />
     </div>
   );

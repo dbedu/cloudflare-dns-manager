@@ -47,6 +47,14 @@
       "recordDeleted": "Record deleted successfully!",
       "proxiedEnabled": "Proxy enabled successfully!",
       "proxiedDisabled": "Proxy disabled successfully!"
+    },
+    "ttl": {
+      "automatic": "Automatic",
+      "minute": "minute",
+      "minutes": "minutes",
+      "hour": "hour",
+      "hours": "hours",
+      "day": "day"
     }
   },
   "adminPanel": {

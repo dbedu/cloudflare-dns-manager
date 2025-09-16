@@ -44,6 +44,14 @@
       "recordDeleted": "レコードが正常に削除されました！",
       "proxiedEnabled": "プロキシが正常に有効になりました！",
       "proxiedDisabled": "プロキシが正常に無効になりました！"
+    },
+    "ttl": {
+      "automatic": "自動",
+      "minute": "分",
+      "minutes": "分",
+      "hour": "時間",
+      "hours": "時間",
+      "day": "日"
     }
   },
   "adminPanel": {

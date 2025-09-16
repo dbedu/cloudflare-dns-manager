@@ -82,7 +82,20 @@ const RecordEditModal = ({ isOpen, onClose, record, onSave }) => {
           </div>
           <div>
             <label htmlFor="ttl" className="block text-sm font-medium text-slate-600">{t('dashboard.modal.ttlLabel')}</label>
-            <input type="number" name="ttl" id="ttl" value={formData.ttl} onChange={handleChange} className="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <select name="ttl" id="ttl" value={formData.ttl} onChange={handleChange} className="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+              <option value="1">{t('dashboard.ttl.automatic')}</option>
+              <option value="60">1 {t('dashboard.ttl.minute')}</option>
+              <option value="120">2 {t('dashboard.ttl.minutes')}</option>
+              <option value="300">5 {t('dashboard.ttl.minutes')}</option>
+              <option value="600">10 {t('dashboard.ttl.minutes')}</option>
+              <option value="900">15 {t('dashboard.ttl.minutes')}</option>
+              <option value="1800">30 {t('dashboard.ttl.minutes')}</option>
+              <option value="3600">1 {t('dashboard.ttl.hour')}</option>
+              <option value="7200">2 {t('dashboard.ttl.hours')}</option>
+              <option value="18000">5 {t('dashboard.ttl.hours')}</option>
+              <option value="43200">12 {t('dashboard.ttl.hours')}</option>
+              <option value="86400">1 {t('dashboard.ttl.day')}</option>
+            </select>
           </div>
           
           {isProxiedApplicable && (
