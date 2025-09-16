@@ -1,29 +1,24 @@
 version: '3.8'
 
 services:
-  server:
-    image: ghcr.io/your-username/your-server-image:latest
-    ports:
-      # Server uses port 3001
-      - "3001:3001"
+  backend:
+    build: ./server
+    container_name: dns-manager-backend
+    command: sh -c "node tools/init-key.js && node src/server.js"
     environment:
-      - PORT=3001
       - NODE_ENV=production
     volumes:
-      # Mount volume for SQLite database persistence
       - sqlite_data:/app/database
-    depends_on:
-      - client
+      # Also mount the config to make it persistent
+      - ./server/src/config:/app/src/config
 
-  client:
-    image: ghcr.io/your-username/your-client-image:latest
+  frontend:
+    build: ./client
+    container_name: dns-manager-frontend
     ports:
-      # Client continues to use port 3000
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://server:3001/api
+      - "8081:80"
     depends_on:
-      - server
+      - backend
 
 volumes:
   sqlite_data:

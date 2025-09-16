@@ -1,73 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/authContext';
+import toast from 'react-hot-toast';
+import { ArrowPathIcon, CheckCircleIcon, ShieldExclamationIcon, WifiIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
+
+const API_BASE_URL = 'http://localhost:3001';
 
 const AdminPanel = () => {
   const { logout } = useAuth();
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const { t } = useTranslation();
   
-  // 表单状态
   const [apiToken, setApiToken] = useState('');
   const [currentKey, setCurrentKey] = useState('');
   const [newKey, setNewKey] = useState('');
   const [confirmKey, setConfirmKey] = useState('');
 
-  useEffect(() => {
-    fetchConfig();
-  }, []);
-
-  const fetchConfig = async () => {
+  const fetchConfig = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/config', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await fetch(`${API_BASE_URL}/api/config`, {
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-      
       if (response.ok) {
-        const data = await response.json();
-        setConfig(data);
+        setConfig(await response.json());
       } else {
-        setError('Failed to load configuration');
+        toast.error(t('adminPanel.errors.loadConfig'));
       }
     } catch (err) {
-      setError('Network error');
+      toast.error(t('adminPanel.errors.networkConfig'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    fetchConfig();
+  }, [fetchConfig]);
 
   const updateApiToken = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage('');
-    setError('');
-    
+    const toastId = toast.loading(t('adminPanel.messages.updatingApiToken'));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/config/cloudflare-token', {
+      const response = await fetch(`${API_BASE_URL}/api/config/cloudflare-token`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ apiToken }),
       });
-      
+      toast.dismiss(toastId);
       if (response.ok) {
-        setMessage('Cloudflare API token updated successfully');
+        toast.success(t('adminPanel.messages.apiTokenUpdated'));
         setApiToken('');
         fetchConfig();
       } else {
         const data = await response.json();
-        setError(data.error || 'Failed to update API token');
+        toast.error(data.error || t('adminPanel.errors.updateApiToken'));
       }
     } catch (err) {
-      setError('Network error');
+      toast.dismiss(toastId);
+      toast.error(t('adminPanel.errors.network'));
     } finally {
       setSaving(false);
     }
@@ -75,40 +70,33 @@ const AdminPanel = () => {
 
   const updateLoginKey = async (e) => {
     e.preventDefault();
-    
     if (newKey !== confirmKey) {
-      setError('New keys do not match');
+      toast.error(t('adminPanel.errors.keysMismatch'));
       return;
     }
-    
     setSaving(true);
-    setMessage('');
-    setError('');
-    
+    const toastId = toast.loading(t('adminPanel.messages.updatingLoginKey'));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/config/login-key', {
+      const response = await fetch(`${API_BASE_URL}/api/config/login-key`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ currentKey, newKey }),
       });
-      
+      toast.dismiss(toastId);
       if (response.ok) {
-        setMessage('Login key updated successfully. Please login again.');
+        toast.success(t('adminPanel.messages.loginKeyUpdated'));
         setCurrentKey('');
         setNewKey('');
         setConfirmKey('');
-        // 延迟登出，让用户看到成功消息
         setTimeout(() => logout(), 2000);
       } else {
         const data = await response.json();
-        setError(data.error || 'Failed to update login key');
+        toast.error(data.error || t('adminPanel.errors.updateLoginKey'));
       }
     } catch (err) {
-      setError('Network error');
+      toast.dismiss(toastId);
+      toast.error(t('adminPanel.errors.network'));
     } finally {
       setSaving(false);
     }
@@ -116,178 +104,88 @@ const AdminPanel = () => {
 
   const testApiConnection = async () => {
     setSaving(true);
-    setMessage('');
-    setError('');
-    
+    const toastId = toast.loading(t('adminPanel.messages.testingApiConnection'));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/config/test-cloudflare', {
+      const response = await fetch(`${API_BASE_URL}/api/config/test-cloudflare`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-      
       const data = await response.json();
-      
+      toast.dismiss(toastId);
       if (data.success) {
-        setMessage('Cloudflare API connection successful');
+        toast.success('Cloudflare API connection successful!');
       } else {
-        setError(data.message || 'API connection failed');
+        toast.error(data.message || t('adminPanel.errors.apiConnectionFailed'));
       }
     } catch (err) {
-      setError('Network error');
+      toast.dismiss(toastId);
+      toast.error(t('adminPanel.errors.networkApiTest'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <div className="text-center p-8">{t('adminPanel.messages.loadingConfig')}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">管理后台</h1>
-            
-            {message && (
-              <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                {message}
-              </div>
+    <div className="container mx-auto p-4 md:p-8">
+      <div className="max-w-2xl mx-auto space-y-8">
+        
+        <div className="bg-white p-6 shadow-lg rounded-xl">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">{t('adminPanel.cloudflareApiToken.title')}</h2>
+          <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200 text-sm">
+            <p className="flex items-center">
+              <span className="font-medium text-slate-600 w-28">{t('adminPanel.cloudflareApiToken.status')}:</span>
+              {config?.hasApiToken ? 
+                <span className="font-semibold text-green-600 flex items-center"><CheckCircleIcon className="h-5 w-5 mr-1"/>{t('adminPanel.cloudflareApiToken.configured')}</span> : 
+                <span className="font-semibold text-red-600 flex items-center"><ShieldExclamationIcon className="h-5 w-5 mr-1"/>{t('adminPanel.cloudflareApiToken.notConfigured')}</span>
+              }
+            </p>
+            {config?.lastUpdated && (
+              <p className="text-xs text-slate-500 mt-2 ml-28">{t('adminPanel.cloudflareApiToken.lastUpdated')}: {new Date(config.lastUpdated).toLocaleString()}</p>
             )}
-            
-            {error && (
-              <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-            
-            {/* Cloudflare API Token 配置 */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Cloudflare API Token</h2>
-              <div className="bg-gray-50 p-4 rounded-md mb-4">
-                <p className="text-sm text-gray-600">
-                  当前状态: {config?.hasApiToken ? 
-                    <span className="text-green-600">已配置 ({config.cloudflareApiToken})</span> : 
-                    <span className="text-red-600">未配置</span>
-                  }
-                </p>
-                {config?.lastUpdated && (
-                  <p className="text-sm text-gray-500">最后更新: {new Date(config.lastUpdated).toLocaleString()}</p>
-                )}
-              </div>
-              
-              <form onSubmit={updateApiToken} className="space-y-4">
-                <div>
-                  <label htmlFor="apiToken" className="block text-sm font-medium text-gray-700">
-                    新的 API Token
-                  </label>
-                  <input
-                    type="password"
-                    id="apiToken"
-                    value={apiToken}
-                    onChange={(e) => setApiToken(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="输入新的 Cloudflare API Token"
-                  />
-                </div>
-                <div className="flex space-x-3">
-                  <button
-                    type="submit"
-                    disabled={saving || !apiToken}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
-                  >
-                    {saving ? '更新中...' : '更新 API Token'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={testApiConnection}
-                    disabled={saving || !config?.hasApiToken}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {saving ? '测试中...' : '测试连接'}
-                  </button>
-                </div>
-              </form>
-            </div>
-            
-            {/* 登录密钥配置 */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">登录密钥管理</h2>
-              <form onSubmit={updateLoginKey} className="space-y-4">
-                <div>
-                  <label htmlFor="currentKey" className="block text-sm font-medium text-gray-700">
-                    当前登录密钥
-                  </label>
-                  <input
-                    type="password"
-                    id="currentKey"
-                    value={currentKey}
-                    onChange={(e) => setCurrentKey(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="输入当前登录密钥"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="newKey" className="block text-sm font-medium text-gray-700">
-                    新登录密钥
-                  </label>
-                  <input
-                    type="password"
-                    id="newKey"
-                    value={newKey}
-                    onChange={(e) => setNewKey(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="输入新登录密钥"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="confirmKey" className="block text-sm font-medium text-gray-700">
-                    确认新登录密钥
-                  </label>
-                  <input
-                    type="password"
-                    id="confirmKey"
-                    value={confirmKey}
-                    onChange={(e) => setConfirmKey(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="再次输入新登录密钥"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={saving || !currentKey || !newKey || !confirmKey}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
-                >
-                  {saving ? '更新中...' : '更新登录密钥'}
-                </button>
-              </form>
-            </div>
-            
-            {/* 操作按钮 */}
-            <div className="flex justify-between">
-              <button
-                onClick={() => window.location.href = '/dashboard'}
-                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-              >
-                返回仪表板
-              </button>
-              <button
-                onClick={logout}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-              >
-                退出登录
-              </button>
-            </div>
           </div>
+          
+          <form onSubmit={updateApiToken} className="space-y-4">
+            <div>
+              <label htmlFor="apiToken" className="block text-sm font-medium text-slate-600">{t('adminPanel.cloudflareApiToken.newApiToken')}</label>
+              <input type="password" id="apiToken" value={apiToken} onChange={(e) => setApiToken(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.cloudflareApiToken.newApiTokenPlaceholder')} />
+            </div>
+            <div className="flex items-center space-x-4">
+              <button type="submit" disabled={saving || !apiToken} className="inline-flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <ArrowPathIcon className="h-5 w-5" /><span>{saving ? t('adminPanel.buttons.saving') : t('adminPanel.buttons.saveUpdate')}</span>
+              </button>
+              <button type="button" onClick={testApiConnection} disabled={saving || !config?.hasApiToken} className="inline-flex items-center space-x-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <WifiIcon className="h-5 w-5" /><span>{saving ? t('adminPanel.buttons.testing') : t('adminPanel.buttons.testConnection')}</span>
+              </button>
+            </div>
+          </form>
         </div>
+        
+        <div className="bg-white p-6 shadow-lg rounded-xl">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">{t('adminPanel.loginKey.title')}</h2>
+          <form onSubmit={updateLoginKey} className="space-y-4">
+            <div>
+              <label htmlFor="currentKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.currentKey')}</label>
+              <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} />
+            </div>
+            <div>
+              <label htmlFor="newKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.newKey')}</label>
+              <input type="password" id="newKey" value={newKey} onChange={(e) => setNewKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.newKeyPlaceholder')} />
+            </div>
+            <div>
+              <label htmlFor="confirmKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.confirmNewKey')}</label>
+              <input type="password" id="confirmKey" value={confirmKey} onChange={(e) => setConfirmKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.confirmNewKeyPlaceholder')} />
+            </div>
+            <button type="submit" disabled={saving || !currentKey || !newKey || !confirmKey} className="w-full inline-flex justify-center items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              <ShieldExclamationIcon className="h-5 w-5" /><span>{saving ? t('adminPanel.buttons.updating') : t('adminPanel.buttons.updateLoginKey')}</span>
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
   );

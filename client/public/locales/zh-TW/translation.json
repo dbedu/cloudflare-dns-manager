@@ -1,0 +1,96 @@
+{
+  "nav": {
+    "title": "DNS管理器",
+    "dashboard": "儀表板",
+    "adminPanel": "管理面板",
+    "logout": "登出"
+  },
+  "dashboard": {
+    "selectZone": "選擇區域",
+    "pleaseSelectZone": "-- 請選擇一個區域 --",
+    "recordsTitle": "DNS記錄",
+    "addRecord": "新增記錄",
+    "table": {
+      "type": "類型",
+      "name": "名稱",
+      "content": "內容",
+      "ttl": "TTL",
+      "actions": "操作",
+      "proxyStatus": "代理狀態"
+    },
+    "modal": {
+      "createTitle": "建立DNS記錄",
+      "editTitle": "編輯DNS記錄",
+      "nameLabel": "名稱",
+      "typeLabel": "類型",
+      "contentLabel": "內容",
+      "ttlLabel": "TTL",
+      "save": "儲存",
+      "cancel": "取消",
+      "proxiedByCloudflare": "由Cloudflare代理"
+    },
+    "noRecords": "此區域未找到記錄。",
+    "confirmDelete": "您確定要刪除此記錄嗎？",
+    "errors": {
+      "fetchZones": "獲取區域失敗。請檢查Cloudflare API令牌配置。",
+      "fetchRecords": "獲取DNS記錄失敗。",
+      "saveRecord": "儲存記錄失敗。",
+      "deleteRecord": "刪除記錄失敗。",
+      "toggleProxy": "切換代理狀態失敗。"
+    },
+    "messages": {
+      "recordUpdated": "記錄更新成功！",
+      "recordCreated": "記錄建立成功！",
+      "recordDeleted": "記錄刪除成功！",
+      "proxiedEnabled": "代理已成功啟用！",
+      "proxiedDisabled": "代理已成功禁用！"
+    }
+  },
+  "adminPanel": {
+    "cloudflareApiToken": {
+      "title": "Cloudflare API令牌",
+      "status": "狀態",
+      "configured": "已配置",
+      "notConfigured": "未配置",
+      "lastUpdated": "最後更新",
+      "newApiToken": "新的API令牌",
+      "newApiTokenPlaceholder": "輸入新的Cloudflare API令牌"
+    },
+    "loginKey": {
+      "title": "登入金鑰管理",
+      "currentKey": "目前登入金鑰",
+      "currentKeyPlaceholder": "輸入目前登入金鑰",
+      "newKey": "新登入金鑰",
+      "newKeyPlaceholder": "輸入新的強密碼",
+      "confirmNewKey": "確認新登入金鑰",
+      "confirmNewKeyPlaceholder": "再次輸入新登入金鑰"
+    },
+    "messages": {
+      "loadingConfig": "正在載入配置...",
+      "updatingApiToken": "正在更新API令牌...",
+      "apiTokenUpdated": "Cloudflare API令牌更新成功",
+      "updatingLoginKey": "正在更新登入金鑰...",
+      "loginKeyUpdated": "登入金鑰更新成功。請重新登入。",
+      "testingApiConnection": "正在測試API連線...",
+      "apiConnectionSuccessful": "Cloudflare API連線成功！",
+      "apiConnectionFailed": "API連線失敗"
+    },
+    "errors": {
+      "loadConfig": "載入配置失敗",
+      "networkConfig": "獲取配置時發生網路錯誤",
+      "updateApiToken": "更新API令牌失敗",
+      "network": "網路錯誤",
+      "keysMismatch": "新金鑰不匹配",
+      "updateLoginKey": "更新登入金鑰失敗",
+      "networkApiTest": "API測試期間發生網路錯誤"
+    },
+    "buttons": {
+      "saving": "儲存中...",
+      "saveUpdate": "儲存並更新",
+      "testing": "測試中...",
+      "testConnection": "測試連線",
+      "updating": "更新中...",
+      "updateLoginKey": "更新登入金鑰"
+    }
+  }
+}

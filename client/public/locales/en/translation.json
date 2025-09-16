@@ -1,0 +1,103 @@
+{
+  "nav": {
+    "title": "DNS Manager",
+    "dashboard": "Dashboard",
+    "adminPanel": "Admin Panel",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "selectZone": "Select a Zone",
+    "pleaseSelectZone": "-- Please choose a zone --",
+    "recordsTitle": "DNS Records",
+    "addRecord": "Add Record",
+    "table": {
+      "type": "Type",
+      "name": "Name",
+      "content": "Content",
+      "ttl": "TTL",
+      "actions": "Actions",
+      "proxyStatus": "Proxy Status"
+    },
+    "modal": {
+      "createTitle": "Create DNS Record",
+      "editTitle": "Edit DNS Record",
+      "nameLabel": "Name",
+      "typeLabel": "Type",
+      "contentLabel": "Content",
+      "ttlLabel": "TTL",
+      "save": "Save Record",
+      "cancel": "Cancel",
+      "proxiedByCloudflare": "Proxied by Cloudflare",
+      "errors": {
+        "nameContentRequired": "Name and Content fields are required."
+      }
+    },
+    "noRecords": "No records found for this zone.",
+    "confirmDelete": "Are you sure you want to delete this record?",
+    "errors": {
+      "fetchZones": "Failed to fetch zones. Check API token.",
+      "fetchRecords": "Failed to fetch DNS records.",
+      "saveRecord": "Failed to save record.",
+      "deleteRecord": "Failed to delete record.",
+      "toggleProxy": "Failed to toggle proxy status."
+    },
+    "messages": {
+      "recordUpdated": "Record updated successfully!",
+      "recordCreated": "Record created successfully!",
+      "recordDeleted": "Record deleted successfully!",
+      "proxiedEnabled": "Proxy enabled successfully!",
+      "proxiedDisabled": "Proxy disabled successfully!"
+    }
+  },
+  "adminPanel": {
+    "cloudflareApiToken": {
+      "title": "Cloudflare API Token",
+      "status": "Status",
+      "configured": "Configured",
+      "notConfigured": "Not Configured",
+      "lastUpdated": "Last Updated",
+      "newApiToken": "New API Token",
+      "newApiTokenPlaceholder": "Enter new Cloudflare API Token"
+    },
+    "loginKey": {
+      "title": "Login Key Management",
+      "currentKey": "Current Login Key",
+      "currentKeyPlaceholder": "Enter your current login key",
+      "newKey": "New Login Key",
+      "newKeyPlaceholder": "Enter a new, strong key",
+      "confirmNewKey": "Confirm New Key",
+      "confirmNewKeyPlaceholder": "Confirm the new key"
+    },
+    "messages": {
+      "loadingConfig": "Loading configuration...",
+      "updatingApiToken": "Updating API Token...",
+      "apiTokenUpdated": "Cloudflare API token updated successfully",
+      "updatingLoginKey": "Updating Login Key...",
+      "loginKeyUpdated": "Login key updated successfully. Please login again.",
+      "testingApiConnection": "Testing API connection...",
+      "apiConnectionSuccessful": "Cloudflare API connection successful!",
+      "apiConnectionFailed": "API connection failed"
+    },
+    "errors": {
+      "loadConfig": "Failed to load configuration",
+      "networkConfig": "Network error while fetching config",
+      "updateApiToken": "Failed to update API token",
+      "network": "Network error",
+      "keysMismatch": "New keys do not match",
+      "updateLoginKey": "Failed to update login key",
+      "networkApiTest": "Network error during API test"
+    },
+    "buttons": {
+      "saving": "Saving...",
+      "saveUpdate": "Save & Update",
+      "testing": "Testing...",
+      "testConnection": "Test Connection",
+      "updating": "Updating...",
+      "updateLoginKey": "Update Login Key"
+    }
+  },
+  "forceKeyChange": {
+    "title": "Initial Key Setup",
+    "description": "For security reasons, you must change your initial login key before proceeding. Your current key is 'admin123'."
+  }
+}

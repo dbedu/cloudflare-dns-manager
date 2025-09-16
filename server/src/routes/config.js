@@ -60,10 +60,8 @@ router.put('/cloudflare-token', (req, res) => {
     // 同时更新.env文件
     let envContent = fs.readFileSync(envPath, 'utf8');
     if (envContent.includes('CLOUDFLARE_API_TOKEN=')) {
-      envContent = envContent.replace(
-        /CLOUDFLARE_API_TOKEN=.*/,
-        `CLOUDFLARE_API_TOKEN=${apiToken}`
-      );
+      envContent += `
+CLOUDFLARE_API_TOKEN=${apiToken}`;
     } else {
       envContent += `\nCLOUDFLARE_API_TOKEN=${apiToken}`;
     }

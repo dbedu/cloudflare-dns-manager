@@ -12,7 +12,8 @@ const initConfig = () => {
   if (!fs.existsSync(configPath)) {
     const defaultConfig = {
       loginKey: bcrypt.hashSync('default-admin-key', 10),
-      jwtSecret: 'dns_manager_secret_' + Date.now()
+      jwtSecret: 'dns_manager_secret_' + Date.now(),
+      forceKeyChange: true // Default to true if config doesn't exist
     };
     fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
     console.log('Created default auth config. Default login key: default-admin-key');
@@ -56,7 +57,7 @@ const login = async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { authenticated: true }
+      user: { authenticated: true, forceKeyChange: config.forceKeyChange || false } // Pass forceKeyChange status
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -93,6 +94,7 @@ const changeLoginKey = async (req, res) => {
     
     // 更新密钥
     config.loginKey = await bcrypt.hash(newKey, 10);
+    config.forceKeyChange = false; // Set to false after successful change
     saveConfig(config);
     
     res.json({ message: 'Login key updated successfully' });

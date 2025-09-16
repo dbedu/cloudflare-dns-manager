@@ -35,6 +35,7 @@ if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     console.log('  登录密钥状态:', config.loginKey ? '已设置' : '未设置');
     console.log('  JWT密钥状态:', config.jwtSecret ? '已设置' : '未设置');
+    console.log('  强制修改密钥状态:', config.forceKeyChange ? '是' : '否');
   } catch (error) {
     console.log('⚠ 配置文件格式错误:', error.message);
   }
@@ -46,12 +47,8 @@ if (fs.existsSync(configPath)) {
   // 使用 IIFE (Immediately Invoked Function Expression) 来处理 async/await
   (async () => {
     try {
-      // 生成随机默认密钥
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-      let defaultKey = '';
-      for (let i = 0; i < 16; i++) {
-        defaultKey += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+      // 使用 admin123 作为默认密钥
+      const defaultKey = 'admin123';
       
       // 生成哈希密钥
       const hashedKey = await bcrypt.hash(defaultKey, 10);
@@ -61,7 +58,7 @@ if (fs.existsSync(configPath)) {
         loginKey: hashedKey,
         jwtSecret: 'dns_manager_secret_' + Date.now(),
         lastUpdated: new Date().toISOString(),
-        firstRun: true
+        forceKeyChange: true // Add this flag
       };
       
       // 保存配置
@@ -72,6 +69,7 @@ if (fs.existsSync(configPath)) {
       console.log('   默认密钥:', defaultKey);
       console.log('   配置文件:', configPath);
       console.log('   更新时间:', config.lastUpdated);
+      console.log('   强制修改密钥: 是');
       console.log('');
       console.log('⚠ 请妥善保管此密钥，并在首次登录后尽快修改!');
       console.log('='.repeat(50));

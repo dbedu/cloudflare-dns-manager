@@ -1,0 +1,96 @@
+{
+  "nav": {
+    "title": "DNS管理器",
+    "dashboard": "仪表盘",
+    "adminPanel": "管理面板",
+    "logout": "退出登录"
+  },
+  "dashboard": {
+    "selectZone": "选择区域",
+    "pleaseSelectZone": "-- 请选择一个区域 --",
+    "recordsTitle": "DNS记录",
+    "addRecord": "添加记录",
+    "table": {
+      "type": "类型",
+      "name": "名称",
+      "content": "内容",
+      "ttl": "TTL",
+      "actions": "操作",
+      "proxyStatus": "代理状态"
+    },
+    "modal": {
+      "createTitle": "创建DNS记录",
+      "editTitle": "编辑DNS记录",
+      "nameLabel": "名称",
+      "typeLabel": "类型",
+      "contentLabel": "内容",
+      "ttlLabel": "TTL",
+      "save": "保存",
+      "cancel": "取消",
+      "proxiedByCloudflare": "由Cloudflare代理"
+    },
+    "noRecords": "此区域未找到记录。",
+    "confirmDelete": "您确定要删除此记录吗？",
+    "errors": {
+      "fetchZones": "获取区域失败。请检查Cloudflare API令牌配置。",
+      "fetchRecords": "获取DNS记录失败。",
+      "saveRecord": "保存记录失败。",
+      "deleteRecord": "删除记录失败。",
+      "toggleProxy": "切换代理状态失败。"
+    },
+    "messages": {
+      "recordUpdated": "记录更新成功！",
+      "recordCreated": "记录创建成功！",
+      "recordDeleted": "记录删除成功！",
+      "proxiedEnabled": "代理已成功启用！",
+      "proxiedDisabled": "代理已成功禁用！"
+    }
+  },
+  "adminPanel": {
+    "cloudflareApiToken": {
+      "title": "Cloudflare API令牌",
+      "status": "状态",
+      "configured": "已配置",
+      "notConfigured": "未配置",
+      "lastUpdated": "最后更新",
+      "newApiToken": "新的API令牌",
+      "newApiTokenPlaceholder": "输入新的Cloudflare API令牌"
+    },
+    "loginKey": {
+      "title": "登录密钥管理",
+      "currentKey": "当前登录密钥",
+      "currentKeyPlaceholder": "输入当前登录密钥",
+      "newKey": "新登录密钥",
+      "newKeyPlaceholder": "输入新的强密码",
+      "confirmNewKey": "确认新登录密钥",
+      "confirmNewKeyPlaceholder": "再次输入新登录密钥"
+    },
+    "messages": {
+      "loadingConfig": "正在加载配置...",
+      "updatingApiToken": "正在更新API令牌...",
+      "apiTokenUpdated": "Cloudflare API令牌更新成功",
+      "updatingLoginKey": "正在更新登录密钥...",
+      "loginKeyUpdated": "登录密钥更新成功。请重新登录。",
+      "testingApiConnection": "正在测试API连接...",
+      "apiConnectionSuccessful": "Cloudflare API连接成功！",
+      "apiConnectionFailed": "API连接失败"
+    },
+    "errors": {
+      "loadConfig": "加载配置失败",
+      "networkConfig": "获取配置时发生网络错误",
+      "updateApiToken": "更新API令牌失败",
+      "network": "网络错误",
+      "keysMismatch": "新密钥不匹配",
+      "updateLoginKey": "更新登录密钥失败",
+      "networkApiTest": "API测试期间发生网络错误"
+    },
+    "buttons": {
+      "saving": "保存中...",
+      "saveUpdate": "保存并更新",
+      "testing": "测试中...",
+      "testConnection": "测试连接",
+      "updating": "更新中...",
+      "updateLoginKey": "更新登录密钥"
+    }
+  }
+}

@@ -13,6 +13,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [forceKeyChange, setForceKeyChange] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
+        setForceKeyChange(userData.forceKeyChange || false); // Set forceKeyChange from user data
       } catch (error) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -30,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (loginKey) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +46,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         setUser(data.user);
-        return { success: true };
+        setForceKeyChange(data.user.forceKeyChange || false); // Update forceKeyChange after login
+        return { success: true, forceKeyChange: data.user.forceKeyChange || false };
       } else {
         return { success: false, error: data.error };
       }
@@ -57,9 +60,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
+    setForceKeyChange(false);
     
     // Notify server about logout
-    fetch('/api/auth/logout', {
+    fetch('http://localhost:3001/api/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -72,6 +76,8 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     loading,
+    forceKeyChange,
+    setForceKeyChange // Expose setter for modal to update
   };
 
   return (
