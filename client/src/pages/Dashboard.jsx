@@ -182,7 +182,7 @@ const Dashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-800 font-mono">{record.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-500 break-all font-mono">{record.content}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{record.ttl}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{record.ttl === 1 ? 'Automatic' : record.ttl}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {isProxiedApplicable(record.type) ? (
                         <label className="relative inline-flex items-center cursor-pointer">
