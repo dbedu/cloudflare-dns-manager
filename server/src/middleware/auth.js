@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { getConfig } = require('../controllers/authController');
 
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -8,7 +9,8 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dns_manager_secret');
+    const config = getConfig();
+    const decoded = jwt.verify(token, config.jwtSecret);
     req.user = decoded;
     next();
   } catch (error) {

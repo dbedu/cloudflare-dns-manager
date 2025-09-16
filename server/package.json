@@ -2,18 +2,22 @@
   "name": "cloudflare-dns-manager-server",
   "version": "1.0.0",
   "description": "Cloudflare DNS Manager Backend Server",
-  "main": "server.js",
-  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "jest --passWithNoTests"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --passWithNoTests",
+    "reset-key": "node tools/reset-key.js"
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.6",
+    "crypto": "^1.0.1"
   },
   "devDependencies": {
     "jest": "^30.1.3",
