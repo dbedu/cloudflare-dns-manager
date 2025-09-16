@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // In a real app, you would validate the token with the server
       try {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
@@ -29,24 +28,28 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (username, password) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
+  const login = async (loginKey) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ loginKey }),
+      });
 
-    const data = await response.json();
-    
-    if (response.ok) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
-      return { success: true };
-    } else {
-      return { success: false, error: data.error };
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        return { success: true };
+      } else {
+        return { success: false, error: data.error };
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error' };
     }
   };
 
@@ -61,7 +64,7 @@ export const AuthProvider = ({ children }) => {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-    });
+    }).catch(() => {});
   };
 
   const value = {

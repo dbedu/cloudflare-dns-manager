@@ -1,43 +1,65 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/User');
+
+// 配置文件路径
+const configPath = path.join(__dirname, '../config/auth.json');
+
+// 初始化配置文件
+const initConfig = () => {
+  if (!fs.existsSync(configPath)) {
+    const defaultConfig = {
+      loginKey: bcrypt.hashSync('default-admin-key', 10),
+      jwtSecret: 'dns_manager_secret_' + Date.now()
+    };
+    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+    console.log('Created default auth config. Default login key: default-admin-key');
+  }
+};
+
+// 读取配置
+const getConfig = () => {
+  initConfig();
+  return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+};
+
+// 保存配置
+const saveConfig = (config) => {
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+};
 
 const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { loginKey } = req.body;
     
-    // Validate input
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+    if (!loginKey) {
+      return res.status(400).json({ error: 'Login key is required' });
     }
     
-    // Find user
-    const user = await User.findByUsername(username);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    const config = getConfig();
+    
+    // 验证登录密钥
+    const isValidKey = await bcrypt.compare(loginKey, config.loginKey);
+    if (!isValidKey) {
+      return res.status(401).json({ error: 'Invalid login key' });
     }
     
-    // Validate password
-    const isValidPassword = await User.validatePassword(user, password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    // Generate JWT token
+    // 生成JWT token
     const token = jwt.sign(
-      { id: user.id, username: user.username },
-      process.env.JWT_SECRET || 'dns_manager_secret',
+      { authenticated: true, timestamp: Date.now() },
+      config.jwtSecret,
       { expiresIn: '24h' }
     );
     
     res.json({
       message: 'Login successful',
       token,
-      user: {
-        id: user.id,
-        username: user.username
-      }
+      user: { authenticated: true }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -48,15 +70,43 @@ const logout = (req, res) => {
 
 const getProfile = (req, res) => {
   res.json({
-    user: {
-      id: req.user.id,
-      username: req.user.username
-    }
+    user: { authenticated: true },
+    timestamp: new Date().toISOString()
   });
+};
+
+const changeLoginKey = async (req, res) => {
+  try {
+    const { currentKey, newKey } = req.body;
+    
+    if (!currentKey || !newKey) {
+      return res.status(400).json({ error: 'Current key and new key are required' });
+    }
+    
+    const config = getConfig();
+    
+    // 验证当前密钥
+    const isValidKey = await bcrypt.compare(currentKey, config.loginKey);
+    if (!isValidKey) {
+      return res.status(401).json({ error: 'Invalid current key' });
+    }
+    
+    // 更新密钥
+    config.loginKey = await bcrypt.hash(newKey, 10);
+    saveConfig(config);
+    
+    res.json({ message: 'Login key updated successfully' });
+  } catch (error) {
+    console.error('Change key error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 module.exports = {
   login,
   logout,
-  getProfile
+  getProfile,
+  changeLoginKey,
+  getConfig,
+  saveConfig
 };
