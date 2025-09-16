@@ -11,12 +11,12 @@ const configPath = path.join(__dirname, '../config/auth.json');
 const initConfig = () => {
   if (!fs.existsSync(configPath)) {
     const defaultConfig = {
-      loginKey: bcrypt.hashSync('default-admin-key', 10),
+      loginKey: bcrypt.hashSync('admin123', 10),
       jwtSecret: 'dns_manager_secret_' + Date.now(),
       forceKeyChange: true // Default to true if config doesn't exist
     };
     fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
-    console.log('Created default auth config. Default login key: default-admin-key');
+    console.log('Created default auth config. Default login key: admin123');
   }
 };
 

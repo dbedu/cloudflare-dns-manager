@@ -9,8 +9,9 @@ i18n
   .use(initReactI18next) // Keep this in the chain
   .init({
     fallbackLng: 'en',
-    debug: true, // Set to false in production
+    debug: false, // Set to false in production
     supportedLngs: ['en', 'ja', 'zh-CN', 'zh-TW'],
+    nonExplicitSupportedLngs: true,
 
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

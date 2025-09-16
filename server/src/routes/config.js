@@ -6,7 +6,6 @@ const { changeLoginKey } = require('../controllers/authController');
 const router = express.Router();
 
 // 配置文件路径
-const envPath = path.join(__dirname, '../../.env');
 const configPath = path.join(__dirname, '../config/app.json');
 
 // 初始化应用配置
@@ -58,14 +57,17 @@ router.put('/cloudflare-token', (req, res) => {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     
     // 同时更新.env文件
-    let envContent = fs.readFileSync(envPath, 'utf8');
-    if (envContent.includes('CLOUDFLARE_API_TOKEN=')) {
-      envContent += `
-CLOUDFLARE_API_TOKEN=${apiToken}`;
-    } else {
-      envContent += `\nCLOUDFLARE_API_TOKEN=${apiToken}`;
+    const envPath = path.join(__dirname, '../../../.env');
+    let envContent = '';
+    if (fs.existsSync(envPath)) {
+      envContent = fs.readFileSync(envPath, 'utf8');
     }
-    fs.writeFileSync(envPath, envContent);
+
+    const lines = envContent.split(/\r?\n/);
+    const newLines = lines.filter(line => !line.startsWith('CLOUDFLARE_API_TOKEN='));
+    newLines.push(`CLOUDFLARE_API_TOKEN=${apiToken}`);
+    
+    fs.writeFileSync(envPath, newLines.join('\n'));
     
     res.json({ message: 'Cloudflare API token updated successfully' });
   } catch (error) {
@@ -101,10 +103,10 @@ router.post('/test-cloudflare', async (req, res) => {
       res.status(400).json({ success: false, message: 'API token is invalid' });
     }
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Failed to verify API token',
-      error: error.response?.data || error.message 
+      error: error.response?.data || error.message
     });
   }
 });
