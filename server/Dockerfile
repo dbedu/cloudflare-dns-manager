@@ -2,10 +2,13 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install --only=production
+COPY package*.json package-lock.json ./
+
+RUN npm install
 
 COPY . .
+
+RUN npm run reset-key
 
 # Expose the unified port 3001 instead of 3000
 EXPOSE 3001
