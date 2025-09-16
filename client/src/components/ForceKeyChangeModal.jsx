@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = '';
 
-const ForceKeyChangeModal = ({ isOpen, onSave }) => {
+const ForceKeyChangeModal = ({ isOpen }) => {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const [currentKey, setCurrentKey] = useState('');
@@ -38,7 +38,7 @@ const ForceKeyChangeModal = ({ isOpen, onSave }) => {
 
       if (response.ok) {
         toast.success(t('adminPanel.messages.loginKeyUpdated'));
-        onSave(); // Callback to parent to indicate success
+        logout();
       } else {
         const data = await response.json();
         toast.error(data.error || t('adminPanel.errors.updateLoginKey'));
@@ -60,15 +60,15 @@ const ForceKeyChangeModal = ({ isOpen, onSave }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="currentKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.currentKey')}</label>
-            <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} required />
+            <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} required autoComplete="current-password" />
           </div>
           <div>
             <label htmlFor="newKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.newKey')}</label>
-            <input type="password" id="newKey" value={newKey} onChange={(e) => setNewKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.newKeyPlaceholder')} required />
+            <input type="password" id="newKey" value={newKey} onChange={(e) => setNewKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.newKeyPlaceholder')} required autoComplete="new-password" />
           </div>
           <div>
             <label htmlFor="confirmKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.confirmNewKey')}</label>
-            <input type="password" id="confirmKey" value={confirmKey} onChange={(e) => setConfirmKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.confirmNewKeyPlaceholder')} required />
+            <input type="password" id="confirmKey" value={confirmKey} onChange={(e) => setConfirmKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.confirmNewKeyPlaceholder')} required autoComplete="new-password" />
           </div>
           <button type="submit" disabled={saving || !currentKey || !newKey || !confirmKey} className="w-full inline-flex justify-center items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             {saving ? t('adminPanel.buttons.updating') : t('adminPanel.buttons.updateLoginKey')}

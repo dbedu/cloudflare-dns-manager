@@ -152,7 +152,7 @@ const AdminPanel = () => {
           <form onSubmit={updateApiToken} className="space-y-4">
             <div>
               <label htmlFor="apiToken" className="block text-sm font-medium text-slate-600">{t('adminPanel.cloudflareApiToken.newApiToken')}</label>
-              <input type="password" id="apiToken" value={apiToken} onChange={(e) => setApiToken(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.cloudflareApiToken.newApiTokenPlaceholder')} />
+              <input type="password" id="apiToken" value={apiToken} onChange={(e) => setApiToken(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.cloudflareApiToken.newApiTokenPlaceholder')} autoComplete="off" />
             </div>
             <div className="flex items-center space-x-4">
               <button type="submit" disabled={saving || !apiToken} className="inline-flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
@@ -170,7 +170,7 @@ const AdminPanel = () => {
           <form onSubmit={updateLoginKey} className="space-y-4">
             <div>
               <label htmlFor="currentKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.currentKey')}</label>
-              <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} />
+              <input type="password" id="currentKey" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder={t('adminPanel.loginKey.currentKeyPlaceholder')} autoComplete="current-password" />
             </div>
             <div>
               <label htmlFor="newKey" className="block text-sm font-medium text-slate-600">{t('adminPanel.loginKey.newKey')}</label>

@@ -32,11 +32,7 @@ function App() {
 
 // New component to wrap content that needs AuthProvider
 const AppContent = () => {
-  const { user, forceKeyChange, setForceKeyChange } = useAuth();
-
-  const handleKeyChangeSuccess = () => {
-    setForceKeyChange(false);
-  };
+  const { user, forceKeyChange } = useAuth();
 
   return (
     <div className="App">
@@ -62,7 +58,6 @@ const AppContent = () => {
       {user && forceKeyChange && (
         <ForceKeyChangeModal 
           isOpen={forceKeyChange} 
-          onSave={handleKeyChangeSuccess} 
         />
       )}
     </div>
