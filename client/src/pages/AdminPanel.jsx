@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { ArrowPathIcon, CheckCircleIcon, ShieldExclamationIcon, WifiIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = '';
 
 const AdminPanel = () => {
   const { logout } = useAuth();

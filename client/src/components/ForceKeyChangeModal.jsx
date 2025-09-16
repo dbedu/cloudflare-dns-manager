@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/authContext';
 import { useTranslation } from 'react-i18next';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = '';
 
 const ForceKeyChangeModal = ({ isOpen, onSave }) => {
   const { t } = useTranslation();
