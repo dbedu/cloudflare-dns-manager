@@ -48,7 +48,15 @@ const Dashboard = () => {
       });
       if (!response.ok) throw new Error(t('dashboard.errors.fetchRecords'));
       const data = await response.json();
-      if (data.result) setRecords(data.result);
+      if (data.result) {
+        const transformedRecords = data.result.map(record => {
+          if (record.type === 'AAAA' && record.content === '100::') {
+            return { ...record, type: 'Worker', content: record.name };
+          }
+          return record;
+        });
+        setRecords(transformedRecords);
+      }
     } catch (err) {
       toast.error(err.message);
     } finally {
