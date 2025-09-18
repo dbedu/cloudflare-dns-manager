@@ -44,7 +44,10 @@ const RecordEditModal = ({ isOpen, onClose, record, onSave }) => {
       toast.error(t('dashboard.modal.errors.nameContentRequired'));
       return;
     }
-    onSave(formData);
+    onSave({
+      ...formData,
+      ttl: parseInt(formData.ttl, 10),
+    });
   };
 
   const isProxiedApplicable = ['A', 'AAAA', 'CNAME'].includes(formData.type);
