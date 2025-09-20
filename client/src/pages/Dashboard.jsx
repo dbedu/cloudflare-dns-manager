@@ -133,28 +133,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleDeleteRecord = async (recordId) => {
-    if (!window.confirm(t('dashboard.confirmDelete'))) return;
-
-    const token = getAuthToken();
-    const url = `${API_BASE_URL}/api/dns/zones/${selectedZone}/records/${recordId}`;
-
-    try {
-      const response = await fetch(url, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || t('dashboard.errors.deleteRecord'));
-      }
-      toast.success(t('dashboard.messages.recordDeleted'));
-      fetchRecords(selectedZone);
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
-
   const handleToggleProxy = async (record) => {
     const token = getAuthToken();
     const newProxiedStatus = !record.proxied;
